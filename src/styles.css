@@ -48,13 +48,13 @@ button { font: inherit; color: inherit; }
   border: 3px solid var(--black);
   background: var(--panel);
   box-shadow: 0 0 0 3px var(--red), 6px 6px 0 3px var(--black);
-  padding: 12px 14px;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 4px 12px;
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 8px;
+  text-align: center;
 }
-.marquee-flag { grid-row: span 2; }
 .marquee h1 {
   margin: 0;
   font-family: var(--font-pixel);
@@ -66,19 +66,24 @@ button { font: inherit; color: inherit; }
   text-wrap: balance;
 }
 .marquee p { margin: 0; color: var(--muted); font-size: 13px; }
-.lights { position: absolute; top: -9px; right: 12px; display: flex; gap: 5px; }
+/* F1 start sequence: the five lamps light one by one, hold, then all go out together. */
+.lights { display: flex; gap: 8px; padding: 6px 10px; background: var(--black); border: 2px solid var(--line); }
 .lights i {
-  width: 12px; height: 12px;
-  background: var(--red);
+  width: 18px; height: 18px;
+  background: #3a0a08;
   border: 2px solid var(--black);
-  box-shadow: 0 0 8px var(--red);
-  animation: lamp 2.4s steps(1) infinite;
+  border-radius: 50%;
 }
-.lights i:nth-child(2) { animation-delay: .3s; }
-.lights i:nth-child(3) { animation-delay: .6s; }
-.lights i:nth-child(4) { animation-delay: .9s; }
-.lights i:nth-child(5) { animation-delay: 1.2s; }
-@keyframes lamp { 0%, 40% { opacity: .2; box-shadow: none; } 50%, 100% { opacity: 1; } }
+.lights i:nth-child(1) { animation: l1 5s steps(1) infinite; }
+.lights i:nth-child(2) { animation: l2 5s steps(1) infinite; }
+.lights i:nth-child(3) { animation: l3 5s steps(1) infinite; }
+.lights i:nth-child(4) { animation: l4 5s steps(1) infinite; }
+.lights i:nth-child(5) { animation: l5 5s steps(1) infinite; }
+@keyframes l1 { 0% { background: #3a0a08; box-shadow: none; } 12%, 72% { background: #ff2a1f; box-shadow: 0 0 10px 2px var(--red); } 73%, 100% { background: #3a0a08; box-shadow: none; } }
+@keyframes l2 { 0%, 23% { background: #3a0a08; box-shadow: none; } 24%, 72% { background: #ff2a1f; box-shadow: 0 0 10px 2px var(--red); } 73%, 100% { background: #3a0a08; box-shadow: none; } }
+@keyframes l3 { 0%, 35% { background: #3a0a08; box-shadow: none; } 36%, 72% { background: #ff2a1f; box-shadow: 0 0 10px 2px var(--red); } 73%, 100% { background: #3a0a08; box-shadow: none; } }
+@keyframes l4 { 0%, 47% { background: #3a0a08; box-shadow: none; } 48%, 72% { background: #ff2a1f; box-shadow: 0 0 10px 2px var(--red); } 73%, 100% { background: #3a0a08; box-shadow: none; } }
+@keyframes l5 { 0%, 59% { background: #3a0a08; box-shadow: none; } 60%, 72% { background: #ff2a1f; box-shadow: 0 0 10px 2px var(--red); } 73%, 100% { background: #3a0a08; box-shadow: none; } }
 
 /* ---------- screen ---------- */
 .cabinet {
@@ -249,5 +254,6 @@ button { font: inherit; color: inherit; }
 .sheet .row.three > :first-child { grid-column: 1 / -1; }
 
 @media (prefers-reduced-motion: reduce) {
-  .lights i, .coin.shake { animation: none; }
+  .lights i, .coin.shake { animation: none !important; }
+  .lights i { background: #ff2a1f; }
 }
