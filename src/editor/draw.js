@@ -1,8 +1,9 @@
 // Everything that paints on a canvas. All drawing happens in item-local coordinates:
 // the origin is the item's centre and (w, h) its size in image pixels.
 import { SPRITES, spriteCanvas } from './sprites.js'
-import { teamOf } from './catalog.js'
+import { teamOf, TITLE_SONGS } from './catalog.js'
 import { assets } from './assets.js'
+import { isPng } from './custom.js'
 
 export const PIX = '"Press Start 2P", "Courier New", monospace'
 export const RED = '#e10600'
@@ -148,6 +149,19 @@ export const IDS = {
   } }
 }
 
+// Title-song labels: a white tag with a black border, the title centred on top and the year underneath.
+function songLabel(c, w, h, song) {
+  const u = h / 8, p = new Path2D(); pixPath(p, -w / 2, -h / 2, w, h, u)
+  c.fillStyle = '#ffffff'; c.fill(p)
+  c.lineWidth = u * 0.6; c.strokeStyle = INK; c.stroke(p)
+  const inner = w - h * 0.8
+  pixText(c, song.title.toUpperCase(), 0, -h * 0.12, inner, h * 0.32, INK)
+  pixText(c, String(song.year), 0, h * 0.23, inner, h * 0.22, RED)
+}
+TITLE_SONGS.forEach((song, i) => {
+  IDS['song-' + (i + 1)] = { name: song.title, song: true, draw: (c, w, h) => songLabel(c, w, h, song) }
+})
+
 /* ---------- text stickers ---------- */
 const TEXT_LOOK = {
   red: { bg: RED, bd: INK, fg: '#ffffff', sh: '#6b0000' },
@@ -233,6 +247,13 @@ export function drawItem(c, it, src, now) {
   }
   if (it.flip) c.scale(-1, 1)
   const { w, h } = it
+  if (isPng(it.key)) {
+    // One of your PNGs (src/assets/stickers|frames|ids). Small images are pixel art: keep them sharp.
+    const im = assets.png(it.key)
+    if (im) drawBitmap(c, im, w, h, !(im.naturalWidth && im.naturalWidth <= 160))
+    c.restore()
+    return
+  }
   switch (it.type) {
     case 'cover': drawCover(c, it, w, h); break
     case 'frame': FRAMES[it.key].draw(c, w, h); break

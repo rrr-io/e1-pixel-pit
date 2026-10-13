@@ -16,8 +16,8 @@ export default function Dock({ onFile, onSave }) {
   return (
     <div className="dock">
       <div className="dock-in">
-        <button type="button" className="btn" onClick={() => fileRef.current.click()}><FolderIcon />OPEN…</button>
-        <button type="button" className="btn red" onClick={onSave}><DiskIcon />SAVE AS PNG</button>
+        <button type="button" className="btn" onClick={() => fileRef.current.click()}><FolderIcon />OPEN</button>
+        <button type="button" className="btn red" onClick={onSave}><DiskIcon />SAVE</button>
       </div>
       <input
         ref={fileRef}

@@ -37,6 +37,7 @@ export const SPRITES = {
   bolt: { name: 'Bolt', rows: ['...KKKK', '..KYYK.', '..KYK..', '.KYYKKK', '.KYYYYK', 'KKKYYK.', '..KYK..', '.KYK...', '.KK....'] },
   wing: { name: 'Wing', rows: ['.........KK.', '.......KKWWK', '.....KKWWWWK', '...KKWWWWWWK', '..KWWWWWWWK.', '.KWWWWWWWK..', 'KWWWWWKKK...', 'KWWWKK......', '.KKK........'] },
   cloud: { name: 'Cloud', rows: ['.....KKKK.....', '...KKWWWWKK...', '..KWWWWWWWWK..', '.KWWWWWWWWWWKK', 'KWWWWWWWWWWWWK', 'KWWWWWWWWWLLLK', '.KKKKKKKKKKKK.'] },
+  note: { name: 'Note', pal: { N: '#ffffff' }, rows: ['...KKKKK', '...KNNNK', '...KKKKK', '...K...K', '...K...K', '...K...K', '.KKK.KKK', 'KNNKKNNK', 'KNNKKNNK', '.KK..KK.'] },
   tire: { name: 'Tire', rows: ['..KKKKKK..', '.KTTTTTTK.', 'KTTRRRRTTK', 'KTRRKKRRTK', 'KTRKNNKRTK', 'KTRKNNKRTK', 'KTRRKKRRTK', 'KTTRRRRTTK', '.KTTTTTTK.', '..KKKKKK..'] }
 }
 

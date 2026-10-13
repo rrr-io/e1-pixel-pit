@@ -20,6 +20,23 @@ export const teamOf = key => TEAMS.find(t => t.key === key) || TEAMS[TEAMS.lengt
 
 export const COVER_BACKDROPS = [['team', 'TEAM'], ['checker', 'CHECKER'], ['race', 'RACE RED'], ['night', 'NIGHT']]
 
+// ENHYPEN Korean title tracks, used as labels to cover the certificate number (ID tab › SONGS).
+// Long titles use their usual short form. Add new ones at the end.
+export const TITLE_SONGS = [
+  { title: 'Given-Taken', year: 2020 },
+  { title: 'Drunk-Dazed', year: 2021 },
+  { title: 'Fever', year: 2021 },
+  { title: 'Tamed-Dashed', year: 2022 },
+  { title: 'Future Perfect', year: 2022 },
+  { title: 'Bite Me', year: 2023 },
+  { title: 'Sweet Venom', year: 2023 },
+  { title: 'XO', year: 2024 },
+  { title: 'No Doubt', year: 2024 },
+  { title: 'Bad Desire', year: 2025 },
+  { title: 'Knife', year: 2026 },
+  { title: 'Bloody Paradise', year: 2026 }
+]
+
 // "Radio messages": text stickers. Kept short and on theme (F1 radio x MAMA voting).
 export const TEXTS = [
   ['VOTE ENHYPEN', 'red'], ['LIGHTS OUT & VOTE', 'black'], ['BOX BOX: VOTE!', 'white'],
@@ -41,13 +58,23 @@ export const PRESET = {
   id: { x: 0.28, y: 0.95 }
 }
 
-// Default size in image pixels for an image `W` wide. `textAspect` is width/height of a text bitmap.
-export function defaultSize(type, key, W, textAspect = 4) {
+// The drawn-in-code parts. Set one to false once your own PNGs (src/assets/…) replace that set.
+export const SHOW_BUILTIN = { stickers: true, frames: true, ids: true }
+
+// Default size in image pixels for an image `W` wide.
+// `aspect` is width/height of the artwork when it comes from a bitmap: a text sticker or one of your PNGs.
+export function defaultSize(type, key, W, aspect = 4) {
+  if (typeof key === 'string' && key.startsWith('png:')) {
+    if (type === 'frame') return { w: W * 0.4, h: W * 0.4 / aspect }
+    if (type === 'id') return { w: W * 0.48, h: W * 0.48 / aspect }
+    const big = W * 0.18
+    return aspect >= 1 ? { w: big, h: big / aspect } : { w: big * aspect, h: big }
+  }
   if (type === 'cover') return { w: W * 0.365, h: W * 0.365 }
   if (type === 'frame') return { w: W * 0.4, h: W * 0.078 }
   if (type === 'id') return { w: W * 0.48, h: W * 0.078 }
   if (type === 'logo') return { w: W * 0.24, h: W * 0.24 }
-  if (type === 'text') { const h = W * 0.065; return { w: h * textAspect, h } }
+  if (type === 'text') { const h = W * 0.065; return { w: h * aspect, h } }
   const s = SPRITES[key]
   const big = key.startsWith('car') ? W * 0.26 : W * 0.15
   return s.cols >= s.nrows ? { w: big, h: big * s.nrows / s.cols } : { w: big * s.cols / s.nrows, h: big }

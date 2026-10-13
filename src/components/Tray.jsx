@@ -2,7 +2,8 @@ import { useState } from 'react'
 import Thumb from './Thumb.jsx'
 import { SPRITES } from '../editor/sprites.js'
 import { FRAMES, IDS } from '../editor/draw.js'
-import { TEAMS, TEXTS, TEXT_STYLES } from '../editor/catalog.js'
+import { TEAMS, TEXTS, TEXT_STYLES, SHOW_BUILTIN } from '../editor/catalog.js'
+import { CUSTOM } from '../editor/custom.js'
 
 const TITLES = { cover: 'COVERS.EXE', frame: 'DATES.EXE', id: 'IDS.EXE', sticker: 'STICKERS.EXE' }
 const BACKDROPS = [['team', 'TEAM'], ['checker', 'CHECKER'], ['race', 'RED'], ['night', 'NIGHT']]
@@ -62,11 +63,24 @@ export default function Tray({ editor, tab, onGacha }) {
   if (tab === 'cover') {
     body = TEAMS.map(t => <Tile key={t.key} editor={editor} type="cover" itemKey={t.key} label={t.name} bg={editor.coverBg} on={current?.key === t.key} />)
   } else if (tab === 'frame' || tab === 'id') {
-    body = Object.entries(tab === 'frame' ? FRAMES : IDS).map(([k, f]) => (
-      <Tile key={k} editor={editor} type={tab} itemKey={k} label={f.name} showLabel on={current?.key === k} wide />
-    ))
+    // Your PNGs first, then the drawn-in-code set (title songs last in the ID tab).
+    const showBuiltin = tab === 'frame' ? SHOW_BUILTIN.frames : SHOW_BUILTIN.ids
+    body = [
+      ...CUSTOM[tab].map(e => (
+        <Tile key={e.key} editor={editor} type={tab} itemKey={e.key} label={e.name} showLabel on={current?.key === e.key} wide />
+      )),
+      ...Object.entries(tab === 'frame' ? FRAMES : IDS)
+        // Title-song labels are always listed (after the other ID covers); SHOW_BUILTIN only hides the rest.
+        .filter(([, f]) => f.song || showBuiltin)
+        .map(([k, f]) => (
+        <Tile key={k} editor={editor} type={tab} itemKey={k} label={f.name} showLabel on={current?.key === k} wide />
+      ))
+    ]
   } else if (filter === 'pixel') {
-    body = Object.entries(SPRITES).map(([k, s]) => <Tile key={k} editor={editor} type="sprite" itemKey={k} label={s.name} />)
+    body = [
+      ...CUSTOM.sprite.map(e => <Tile key={e.key} editor={editor} type="sprite" itemKey={e.key} label={e.name} />),
+      ...(SHOW_BUILTIN.stickers ? Object.entries(SPRITES) : []).map(([k, s]) => <Tile key={k} editor={editor} type="sprite" itemKey={k} label={s.name} />)
+    ]
   } else if (filter === 'teams') {
     body = TEAMS.map(t => <Tile key={t.key} editor={editor} type="logo" itemKey={t.key} label={t.name + ' badge'} />)
   } else if (filter === 'radio') {

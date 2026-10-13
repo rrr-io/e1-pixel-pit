@@ -3,6 +3,8 @@
 import { PRESET, SINGLE, defaultSize } from './catalog.js'
 import { drawItem, textBitmap, RED } from './draw.js'
 import { toLocal, handles, hitHandle, hitItem, rescaleItems, snapAngle } from './geometry.js'
+import { isPng } from './custom.js'
+import { assets } from './assets.js'
 
 export class Editor {
   constructor() {
@@ -38,7 +40,9 @@ export class Editor {
 
   /* ---- items ---- */
   sizeFor(type, key) {
-    const aspect = type === 'text' ? (() => { const b = textBitmap(key.t, key.s); return b.width / b.height })() : undefined
+    let aspect
+    if (type === 'text') { const b = textBitmap(key.t, key.s); aspect = b.width / b.height }
+    else if (isPng(key)) { const im = assets.png(key); aspect = im && im.naturalHeight ? im.naturalWidth / im.naturalHeight : 1 }
     return defaultSize(type, key, this.W, aspect)
   }
 

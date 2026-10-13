@@ -4,7 +4,8 @@ import { loadAssets } from './editor/assets.js'
 import { makeGenericBadge } from './editor/draw.js'
 import { makeDemoCertificate } from './editor/demo.js'
 import { SPRITES } from './editor/sprites.js'
-import { TEAMS, TEXTS } from './editor/catalog.js'
+import { TEAMS, TEXTS, SHOW_BUILTIN } from './editor/catalog.js'
+import { CUSTOM } from './editor/custom.js'
 import Header from './components/Header.jsx'
 import Stage from './components/Stage.jsx'
 import Tabs from './components/Tabs.jsx'
@@ -60,7 +61,8 @@ export default function App() {
 
   const gacha = () => {
     const pool = [
-      ...Object.keys(SPRITES).map(k => ['sprite', k]),
+      ...CUSTOM.sprite.map(e => ['sprite', e.key]),
+      ...(SHOW_BUILTIN.stickers ? Object.keys(SPRITES) : []).map(k => ['sprite', k]),
       ...TEAMS.map(t => ['logo', t.key]),
       ...TEXTS.map(([t, s]) => ['text', { t, s }])
     ]
