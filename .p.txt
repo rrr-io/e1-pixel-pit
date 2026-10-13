@@ -1,0 +1,39 @@
+15df3f2 add stickers
+86701cd initial commit
+78353d5 Retro desktop restyle: windows, grid paper, text tabs, status-bar tools, finish window
+7d1d61a Header: remove the flag, start lights above the title with the F1 sequence
+e828275 E1 Pixel Pit v0.1: React editor, black/red/white palette
+---
+Editor.js
+Editor.test.js
+assets.js
+custom.js
+custom.test.js
+demo.js
+detect.js
+detect.test.js
+geometry.js
+geometry.test.js
+pixels.js
+sprites.js
+---
+src/components/Thumb.jsx
+src/components/Tray.jsx
+src/App.jsx
+src/editor/Editor.js
+src/editor/custom.test.js
+src/editor/geometry.js
+src/editor/assets.js
+src/editor/Editor.test.js
+---
+../job-interview-eraser/0001-custom-png-assets.patch
+../job-interview-eraser/0002-smaller-buttons-save-label.patch
+../job-interview-eraser/0003-title-song-id-labels.patch
+../job-interview-eraser/0004-symmetric-song-labels.patch
+../job-interview-eraser/0005-song-labels-title-only.patch
+../job-interview-eraser/0006-detect-certificate-layout.patch
+../job-interview-eraser/0007-plain-black-text.patch
+../job-interview-eraser/coven-gathering-certificates.patch
+../job-interview-eraser/e1-glossary-01-favicon-cards-footer.patch
+../job-interview-eraser/e1-glossary-03-footer-stripe.patch
+../job-interview-eraser/remove-known-hosts-secret.patch

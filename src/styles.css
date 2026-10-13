@@ -197,6 +197,15 @@ button:focus-visible, input:focus-visible, select:focus-visible, #cv:focus-visib
 }
 .chip[aria-pressed="true"] { background: #fff; border-color: #fff; color: var(--ink); }
 
+.slots { display: flex; align-items: center; gap: 6px; padding: 10px 10px 0; flex-wrap: wrap; }
+.slots span { font-family: var(--font-pixel); font-size: 10px; margin-right: 2px; }
+.slot {
+  width: 34px; height: 30px;
+  border: 2px solid var(--ink); border-radius: 6px;
+  background: var(--paper); color: var(--ink);
+  font-family: var(--font-pixel); font-weight: 700; font-size: 12px; padding: 0;
+}
+.slot[aria-pressed="true"] { background: var(--red); color: #fff; }
 .tiles { display: flex; gap: 8px; overflow-x: auto; padding: 10px; scroll-snap-type: x proximity; }
 .tile {
   flex: 0 0 auto;

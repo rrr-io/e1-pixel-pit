@@ -19,6 +19,7 @@ npm test        # vitest, a few seconds
   - `draw.js`: every painter (date frames, ID covers, team covers, text stickers, generic E1 badge)
   - `sprites.js`: pixel-art stickers, one character per pixel
   - `catalog.js`: teams, text stickers, default sizes, `SHOW_BUILTIN` and where each part lands on a certificate
+  - `detect.js`: finds the photo squares, the date and the certificate number in a screenshot (pure, tested); `pixels.js` feeds it from the browser
   - `custom.js`: picks up your PNGs from `src/assets/stickers`, `frames` and `ids`
   - `geometry.js`: hit-testing and rescaling, pure and tested
   - `assets.js`: waits for the pixel font and decodes the logos before anything is drawn
@@ -45,7 +46,13 @@ Drop `name.webp` (square, transparent outside the badge) in `src/assets/logos/`,
 
 ### Where things land
 
-`PRESET` in `catalog.js` holds the spot for the cover, the date frame and the ID cover as fractions of the screenshot, averaged from the EN (930×1410) and JP (605×940) certificates. Screenshots cropped differently need a nudge; when a new screenshot is loaded, existing decorations keep their relative position.
+When a screenshot is loaded, `detect.js` reads it (scaled to 360 px wide) and finds:
+
+- **the photo row**, with any number of squares: the tallest band of rows that stands out from the pastel card, split into one square per photo by the empty gaps between them. All squares share one size and one baseline.
+- **the participation date**: the first text line below the photos with text on the right and nothing in the middle.
+- **the certificate number**: the lowest text line that starts on the left.
+
+Every photo except the first gets a cover in the chosen team badge (the PHOTO tab's numbered buttons turn single covers on and off), and the date frame and ID cover move onto the date and the number. If nothing is found, decorations keep their relative position and `PRESET` in `catalog.js` is used for new ones.
 
 ## Deploy
 

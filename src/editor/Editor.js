@@ -15,6 +15,11 @@ export class Editor {
     this.H = 1410
     this.isDemo = true
     this.coverBg = 'team'
+    this.coverKey = 'hoonrari'  // team on the photo covers
+    this.slots = []             // photo squares found on the certificate, image px: { x, y, w, h } centres
+    this.covered = new Set()    // indices of the slots that carry a cover
+    this.dateBox = null         // where the participation date is, if found
+    this.idBox = null           // where the certificate number is, if found
     this.uid = 1
     this.canvas = null
     this.cssW = 300
@@ -38,6 +43,57 @@ export class Editor {
     this.layout(); this.emit()
   }
 
+  /* ---- certificate layout (see detect.js) ---- */
+  // `found` is detectLayout()'s result in fractions, or null. Covers go on every photo except the first
+  // (the group the fan voted for comes first), the date frame and ID cover move onto what was found.
+  applyLayout(found) {
+    if (!found) { this.slots = []; this.dateBox = this.idBox = null; this.covered.clear(); this.emit(); return false }
+    const { W, H } = this
+    const px = b => b && { x: b.x * W, y: b.y * H, w: b.w * W, h: b.h * H }
+    this.slots = found.slots.map(px)
+    this.dateBox = px(found.date)
+    this.idBox = px(found.id)
+    // Keep covering photos if there were covers (or nothing at all yet); respect a fan who removed them.
+    const wantCovers = this.items.some(i => i.type === 'cover') || !this.items.length
+    this.items = this.items.filter(i => i.type !== 'cover')
+    this.covered = new Set(wantCovers ? this.slots.map((_, i) => i).filter(i => i > 0) : [])
+    for (const i of this.covered) this.items.unshift(this.coverAt(i))
+    const frame = this.current('frame'); if (frame && this.dateBox) Object.assign(frame, this.fitFrame())
+    const id = this.current('id'); if (id && this.idBox) Object.assign(id, this.fitId())
+    if (this.sel && !this.items.includes(this.sel)) this.sel = null
+    this.dirty(); this.emit()
+    return true
+  }
+
+  coverAt(i) {
+    const s = this.slots[i], side = Math.max(s.w, s.h) * 1.02
+    return { id: this.uid++, type: 'cover', key: this.coverKey, bg: this.coverBg, slot: i,
+      x: s.x, y: s.y, w: side, h: side, rot: 0, flip: false, pop: 0 }
+  }
+  fitFrame() {
+    const b = this.dateBox, W = this.W
+    return { x: b.x, y: b.y, w: b.w + W * 0.06, h: Math.max(b.h * 2.2, W * 0.06), rot: 0 }
+  }
+  fitId() {
+    const b = this.idBox, W = this.W
+    return { x: b.x, y: b.y, w: b.w + W * 0.05, h: Math.max(b.h * 2.2, W * 0.06), rot: 0 }
+  }
+
+  // Cover or uncover one photo (the PHOTO tab's numbered buttons).
+  toggleSlot(i) {
+    if (!this.slots[i]) return
+    if (this.covered.has(i)) {
+      this.covered.delete(i)
+      this.items = this.items.filter(it => !(it.type === 'cover' && it.slot === i))
+      if (this.sel && !this.items.includes(this.sel)) this.sel = null
+    } else {
+      this.covered.add(i)
+      const it = this.coverAt(i); it.pop = typeof performance !== 'undefined' ? performance.now() : 0
+      this.items.unshift(it)
+    }
+    this.dirty(); this.emit()
+  }
+
   /* ---- items ---- */
   sizeFor(type, key) {
     let aspect
@@ -48,6 +104,23 @@ export class Editor {
 
   addItem(type, key, opts = {}) {
     const now = typeof performance !== 'undefined' ? performance.now() : 0
+    if (type === 'cover') {
+      // One team for every covered photo: picking a badge restyles them all.
+      this.coverKey = key
+      const covers = this.items.filter(i => i.type === 'cover')
+      if (covers.length) {
+        for (const c of covers) { c.key = key; c.bg = this.coverBg; c.pop = now }
+        this.select(covers[0]); return covers[0]
+      }
+      if (this.slots.length > 1) {
+        if (!this.covered.size) this.covered = new Set(this.slots.map((_, i) => i).filter(i => i > 0))
+        const made = [...this.covered].map(i => { const it = this.coverAt(i); it.pop = now; return it })
+        this.items.unshift(...made)
+        this.select(made[0]); return made[0]
+      }
+    }
+    if (type === 'frame' && this.dateBox && !this.current('frame')) opts = { ...this.fitFrame(), ...opts }
+    if (type === 'id' && this.idBox && !this.current('id')) opts = { ...this.fitId(), ...opts }
     const existing = SINGLE.includes(type) ? this.current(type) : null
     if (existing) {
       existing.key = key
@@ -70,8 +143,12 @@ export class Editor {
   }
 
   select(it) { this.sel = it; this.dirty(); this.emit() }
-  remove() { if (!this.sel) return; this.items = this.items.filter(i => i !== this.sel); this.select(null) }
-  clearAll() { this.items = []; this.select(null) }
+  remove() {
+    if (!this.sel) return
+    if (this.sel.type === 'cover' && this.sel.slot != null) this.covered.delete(this.sel.slot)
+    this.items = this.items.filter(i => i !== this.sel); this.select(null)
+  }
+  clearAll() { this.items = []; this.covered.clear(); this.select(null) }
   duplicate() {
     const s = this.sel
     if (!s || SINGLE.includes(s.type)) return false
@@ -84,8 +161,7 @@ export class Editor {
   toBack() { if (this.sel) { this.items = this.items.filter(i => i !== this.sel); this.items.unshift(this.sel); this.dirty() } }
   setCoverBg(bg) {
     this.coverBg = bg
-    const c = this.current('cover')
-    if (c) { c.bg = bg; c.pop = performance.now() }
+    for (const c of this.items) if (c.type === 'cover') { c.bg = bg; c.pop = performance.now() }
     this.dirty(); this.emit()
   }
 

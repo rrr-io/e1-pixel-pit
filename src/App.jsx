@@ -3,6 +3,8 @@ import { Editor } from './editor/Editor.js'
 import { loadAssets } from './editor/assets.js'
 import { makeGenericBadge } from './editor/draw.js'
 import { makeDemoCertificate } from './editor/demo.js'
+import { detectLayout } from './editor/detect.js'
+import { readPixels } from './editor/pixels.js'
 import { TEAMS, TEXTS, SHOW_BUILTIN, BUILTIN_STICKERS } from './editor/catalog.js'
 import { CUSTOM } from './editor/custom.js'
 import Header from './components/Header.jsx'
@@ -29,6 +31,7 @@ export default function App() {
       if (!alive) return
       const demo = makeDemoCertificate()
       editor.setBase(demo, demo.width, demo.height, true)
+      editor.applyLayout(detectLayout(readPixels(demo)))
       const { W, H } = editor
       editor.addItem('cover', 'hoonrari')
       editor.addItem('frame', 'kerb')
@@ -53,7 +56,16 @@ export default function App() {
     if (!file) return
     const url = URL.createObjectURL(file)
     const im = new Image()
-    im.onload = () => { editor.setBase(im, im.naturalWidth, im.naturalHeight, false); flash('Loaded! Nudge things into place') }
+    im.onload = () => {
+      editor.setBase(im, im.naturalWidth, im.naturalHeight, false)
+      // Find the photo squares, the date and the certificate number, and move the decorations onto them.
+      let found = null
+      try { found = detectLayout(readPixels(im)) } catch { /* fall back to moving things proportionally */ }
+      if (editor.applyLayout(found)) {
+        const n = editor.slots.length
+        flash(n === 1 ? 'Found 1 photo' : `Found ${n} photos · covered ${editor.covered.size}`)
+      } else flash('Could not find the photos: place the cover by hand')
+    }
     im.onerror = () => { URL.revokeObjectURL(url); flash('That file is not an image') }
     im.src = url
   }

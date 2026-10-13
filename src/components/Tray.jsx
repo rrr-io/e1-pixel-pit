@@ -61,7 +61,7 @@ export default function Tray({ editor, tab, onGacha }) {
 
   let body
   if (tab === 'cover') {
-    body = TEAMS.map(t => <Tile key={t.key} editor={editor} type="cover" itemKey={t.key} label={t.name} bg={editor.coverBg} on={current?.key === t.key} />)
+    body = TEAMS.map(t => <Tile key={t.key} editor={editor} type="cover" itemKey={t.key} label={t.name} bg={editor.coverBg} on={editor.coverKey === t.key && !!current} />)
   } else if (tab === 'frame' || tab === 'id') {
     // Your PNGs first, then the drawn-in-code set (title songs last in the ID tab).
     const showBuiltin = tab === 'frame' ? SHOW_BUILTIN.frames : SHOW_BUILTIN.ids
@@ -96,6 +96,14 @@ export default function Tray({ editor, tab, onGacha }) {
         <span className="win-title">{TITLES[tab]}</span>
         {chips && <div className="chips">{chips}</div>}
       </div>
+      {tab === 'cover' && editor.slots.length > 1 && (
+        <div className="slots" role="group" aria-label="Photos to cover">
+          <span>COVER PHOTO</span>
+          {editor.slots.map((_, i) => (
+            <button key={i} type="button" className="slot" aria-pressed={editor.covered.has(i)} onClick={() => editor.toggleSlot(i)}>{i + 1}</button>
+          ))}
+        </div>
+      )}
       {tab === 'sticker' && filter === 'abc'
         ? <CustomText editor={editor} />
         : (
