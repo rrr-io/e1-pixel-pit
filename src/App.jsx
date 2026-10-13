@@ -3,8 +3,7 @@ import { Editor } from './editor/Editor.js'
 import { loadAssets } from './editor/assets.js'
 import { makeGenericBadge } from './editor/draw.js'
 import { makeDemoCertificate } from './editor/demo.js'
-import { SPRITES } from './editor/sprites.js'
-import { TEAMS, TEXTS, SHOW_BUILTIN } from './editor/catalog.js'
+import { TEAMS, TEXTS, SHOW_BUILTIN, BUILTIN_STICKERS } from './editor/catalog.js'
 import { CUSTOM } from './editor/custom.js'
 import Header from './components/Header.jsx'
 import Stage from './components/Stage.jsx'
@@ -34,8 +33,8 @@ export default function App() {
       editor.addItem('cover', 'hoonrari')
       editor.addItem('frame', 'kerb')
       editor.addItem('id', 'hazard')
-      editor.addItem('sprite', 'carRed', { x: W * 0.2, y: H * 0.6, rot: -0.12 })
-      editor.addItem('sprite', 'star', { x: W * 0.9, y: H * 0.2 })
+      editor.addItem('sprite', 'trophy', { x: W * 0.2, y: H * 0.6, rot: -0.12 })
+      editor.addItem('sprite', 'heart', { x: W * 0.9, y: H * 0.2 })
       editor.addItem('text', { t: 'VOTE ENHYPEN', s: 'red' }, { x: W * 0.3, y: H * 0.29, rot: -0.08 })
       editor.items.forEach(i => { i.pop = 0 })
       editor.select(null)
@@ -62,7 +61,8 @@ export default function App() {
   const gacha = () => {
     const pool = [
       ...CUSTOM.sprite.map(e => ['sprite', e.key]),
-      ...(SHOW_BUILTIN.stickers ? Object.keys(SPRITES) : []).map(k => ['sprite', k]),
+      ...CUSTOM.team.map(e => ['sprite', e.key]),
+      ...(SHOW_BUILTIN.stickers ? BUILTIN_STICKERS : []).map(k => ['sprite', k]),
       ...TEAMS.map(t => ['logo', t.key]),
       ...TEXTS.map(([t, s]) => ['text', { t, s }])
     ]
@@ -76,13 +76,12 @@ export default function App() {
     setResult(blob)
   }
 
-  const duplicate = () => { if (!editor.duplicate()) flash('One per certificate') }
 
   return (
     <>
       <div className="app">
         <Header />
-        <Stage editor={editor} ready={ready} toast={toast} onDuplicate={duplicate} />
+        <Stage editor={editor} ready={ready} toast={toast} />
         <Tabs tab={tab} onChange={setTab} />
         {ready && <Tray editor={editor} tab={tab} onGacha={gacha} />}
       </div>

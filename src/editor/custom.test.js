@@ -19,7 +19,7 @@ describe('your PNGs', () => {
     const frame = defaultSize('frame', 'png:kerb', 1000, 5)
     expect(frame.w).toBeCloseTo(400); expect(frame.h).toBeCloseTo(80)
     const tall = defaultSize('sprite', 'png:tower', 1000, 0.5)
-    expect(tall.h).toBeCloseTo(180); expect(tall.w).toBeCloseTo(90)
+    expect(tall.h).toBeCloseTo(350); expect(tall.w).toBeCloseTo(175)
   })
 })
 

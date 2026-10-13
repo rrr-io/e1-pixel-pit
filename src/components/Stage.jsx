@@ -3,7 +3,7 @@ import StatusBar from './StatusBar.jsx'
 
 // The CERTIFICATE.PNG window: title bar with the start lights, the canvas, and a status bar
 // that turns into the selection tools when a decoration is selected.
-export default function Stage({ editor, ready, toast, onDuplicate }) {
+export default function Stage({ editor, ready, toast }) {
   const screenRef = useRef(null)
   const canvasRef = useRef(null)
 
@@ -30,8 +30,9 @@ export default function Stage({ editor, ready, toast, onDuplicate }) {
       <div className="screen" ref={screenRef}>
         <canvas ref={canvasRef} id="cv" tabIndex={0} aria-label="Certificate preview. Tap a decoration to select it." />
         {!ready && <div className="loading">WARMING UP TYRES…</div>}
+        {!editor.sel && <StatusBar editor={editor} toast={toast} />}
       </div>
-      <StatusBar editor={editor} toast={toast} onDuplicate={onDuplicate} />
+      {editor.sel && <StatusBar editor={editor} toast={toast} />}
     </section>
   )
 }

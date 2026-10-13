@@ -51,4 +51,12 @@ describe('Editor', () => {
     expect(ed.items).toEqual([b])
     expect(ed.sel).toBeNull()
   })
+
+  it('clears every decoration', () => {
+    const ed = new Editor()
+    const a = ed.addItem('sprite', 'heart'); ed.addItem('sprite', 'flag')
+    ed.select(a); ed.clearAll()
+    expect(ed.items).toEqual([])
+    expect(ed.sel).toBeNull()
+  })
 })

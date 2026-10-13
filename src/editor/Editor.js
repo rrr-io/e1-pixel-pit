@@ -71,6 +71,7 @@ export class Editor {
 
   select(it) { this.sel = it; this.dirty(); this.emit() }
   remove() { if (!this.sel) return; this.items = this.items.filter(i => i !== this.sel); this.select(null) }
+  clearAll() { this.items = []; this.select(null) }
   duplicate() {
     const s = this.sel
     if (!s || SINGLE.includes(s.type)) return false

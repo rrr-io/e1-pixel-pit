@@ -74,11 +74,6 @@ export const FRAMES = {
     c.save(); c.clip(p, 'evenodd'); checker(c, -w / 2, -h / 2, w, h, u, '#ffffff', INK); c.restore()
     c.lineWidth = u * 0.6; c.strokeStyle = RED; c.strokeRect(-w / 2, -h / 2, w, h)
   } },
-  bow: { name: 'Red bow', draw(c, w, h) {
-    const u = h / 10
-    ring(c, w, h, u * 1.7, u * 1.4, RED); ring(c, w - u * 1.1, h - u * 1.1, u * 0.45, u * 1.1, '#ffffff')
-    spr(c, 'bow', 0, -h / 2 - u * 0.2, Math.min(h * 0.95, w * 0.3))
-  } },
   lap: { name: 'Lap time', draw(c, w, h) {
     const u = h / 10
     ring(c, w, h, u * 1.4, u, INK); ring(c, w - u * 2.2, h - u * 2.2, u * 0.5, u * 0.6, RED)

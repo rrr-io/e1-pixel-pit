@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Thumb from './Thumb.jsx'
 import { SPRITES } from '../editor/sprites.js'
 import { FRAMES, IDS } from '../editor/draw.js'
-import { TEAMS, TEXTS, TEXT_STYLES, SHOW_BUILTIN } from '../editor/catalog.js'
+import { TEAMS, TEXTS, TEXT_STYLES, SHOW_BUILTIN, BUILTIN_STICKERS } from '../editor/catalog.js'
 import { CUSTOM } from '../editor/custom.js'
 
 const TITLES = { cover: 'COVERS.EXE', frame: 'DATES.EXE', id: 'IDS.EXE', sticker: 'STICKERS.EXE' }
@@ -79,10 +79,13 @@ export default function Tray({ editor, tab, onGacha }) {
   } else if (filter === 'pixel') {
     body = [
       ...CUSTOM.sprite.map(e => <Tile key={e.key} editor={editor} type="sprite" itemKey={e.key} label={e.name} />),
-      ...(SHOW_BUILTIN.stickers ? Object.entries(SPRITES) : []).map(([k, s]) => <Tile key={k} editor={editor} type="sprite" itemKey={k} label={s.name} />)
+      ...(SHOW_BUILTIN.stickers ? BUILTIN_STICKERS : []).map(k => <Tile key={k} editor={editor} type="sprite" itemKey={k} label={SPRITES[k].name} />)
     ]
   } else if (filter === 'teams') {
-    body = TEAMS.map(t => <Tile key={t.key} editor={editor} type="logo" itemKey={t.key} label={t.name + ' badge'} />)
+    body = [
+      ...CUSTOM.team.map(e => <Tile key={e.key} editor={editor} type="sprite" itemKey={e.key} label={e.name} />),
+      ...TEAMS.map(t => <Tile key={t.key} editor={editor} type="logo" itemKey={t.key} label={t.name + ' badge'} />)
+    ]
   } else if (filter === 'radio') {
     body = TEXTS.map(([t, s]) => <Tile key={t} editor={editor} type="text" itemKey={{ t, s }} label={t} wide />)
   }

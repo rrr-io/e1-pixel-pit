@@ -60,6 +60,8 @@ export const PRESET = {
 
 // The drawn-in-code parts. Set one to false once your own PNGs (src/assets/…) replace that set.
 export const SHOW_BUILTIN = { stickers: true, frames: true, ids: true }
+// Built-in pixel stickers offered in the tray. The others stay defined in sprites.js for internal drawings.
+export const BUILTIN_STICKERS = ['heart', 'flag', 'trophy']
 
 // Default size in image pixels for an image `W` wide.
 // `aspect` is width/height of the artwork when it comes from a bitmap: a text sticker or one of your PNGs.
@@ -67,7 +69,7 @@ export function defaultSize(type, key, W, aspect = 4) {
   if (typeof key === 'string' && key.startsWith('png:')) {
     if (type === 'frame') return { w: W * 0.4, h: W * 0.4 / aspect }
     if (type === 'id') return { w: W * 0.48, h: W * 0.48 / aspect }
-    const big = W * 0.18
+    const big = W * 0.35
     return aspect >= 1 ? { w: big, h: big / aspect } : { w: big * aspect, h: big }
   }
   if (type === 'cover') return { w: W * 0.365, h: W * 0.365 }
