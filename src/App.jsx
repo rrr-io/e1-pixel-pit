@@ -18,7 +18,9 @@ export default function App() {
   const editor = useMemo(() => new Editor(), [])
   const [, rerender] = useReducer(x => x + 1, 0)
   const [ready, setReady] = useState(false)
-  const [tab, setTab] = useState('cover')
+  // No tab open at first: the certificate gets the room. Tapping the open tab again closes it.
+  const [tab, setTab] = useState(null)
+  const pickTab = key => { setTab(t => (t === key ? null : key)); window.scrollTo(0, 0) }
   const [toast, setToast] = useState('')
   const [result, setResult] = useState(null)
   const toastTimer = useRef(0)
@@ -92,10 +94,10 @@ export default function App() {
   return (
     <>
       <div className="app">
-        <Header />
+        {!tab && <Header />}
         <Stage editor={editor} ready={ready} toast={toast} />
-        <Tabs tab={tab} onChange={setTab} />
-        {ready && <Tray editor={editor} tab={tab} onGacha={gacha} />}
+        <Tabs tab={tab} onChange={pickTab} />
+        {ready && tab && <Tray editor={editor} tab={tab} onGacha={gacha} />}
       </div>
       <Dock onFile={loadFile} onSave={save} />
       {result && <ResultModal blob={result} isDemo={editor.isDemo} size={{ w: editor.W, h: editor.H }} onClose={() => setResult(null)} />}

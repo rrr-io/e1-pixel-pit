@@ -96,18 +96,22 @@ export default function Tray({ editor, tab, onGacha }) {
         <span className="win-title">{TITLES[tab]}</span>
         {chips && <div className="chips">{chips}</div>}
       </div>
-      {tab === 'cover' && editor.slots.length > 1 && (
-        <div className="slots" role="group" aria-label="Photos to cover">
-          <span>COVER PHOTO</span>
-          {editor.slots.map((_, i) => (
-            <button key={i} type="button" className="slot" aria-pressed={editor.covered.has(i)} onClick={() => editor.toggleSlot(i)}>{i + 1}</button>
-          ))}
-        </div>
-      )}
       {tab === 'sticker' && filter === 'abc'
         ? <CustomText editor={editor} />
         : (
           <div className="tiles">
+            {tab === 'cover' && editor.slots.length > 1 && (
+              // Which photos get a cover. Sits in the strip like the GACHA tile, so this window
+              // keeps the same height as the others.
+              <div className="tile slots" role="group" aria-label="Photos to cover">
+                <small>COVER</small>
+                <div className="slot-grid" style={{ gridTemplateColumns: `repeat(${editor.slots.length > 4 ? 3 : 2}, auto)` }}>
+                  {editor.slots.map((_, i) => (
+                    <button key={i} type="button" className="slot" aria-pressed={editor.covered.has(i)} aria-label={`Cover photo ${i + 1}`} onClick={() => editor.toggleSlot(i)}>{i + 1}</button>
+                  ))}
+                </div>
+              </div>
+            )}
             {tab === 'sticker' && (
               <button type="button" className="tile gacha" onClick={onGacha} aria-label="Gacha: add a random sticker">
                 <span className="capsule" aria-hidden="true" />GACHA

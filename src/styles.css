@@ -1,7 +1,7 @@
 /* E1 Pixel Pit — retro desktop: grid paper, windows with title bars, thick black outlines, no drop shadows.
    One committed light look in white, race red and black.
-   Layout: one column — title box, CERTIFICATE.PNG window (canvas + status bar), category buttons,
-   item window, fixed OPEN / SAVE bar at the bottom. */
+   Layout: one column — title box (hidden while a tab is open), CERTIFICATE.PNG window (canvas sized
+   to the free height + status bar), category buttons, item window (only while a tab is open), fixed OPEN / SAVE bar. */
 :root {
   --paper: #ffffff;
   --grid: #f4dcdb;        /* page grid lines */
@@ -54,30 +54,18 @@ button:focus-visible, input:focus-visible, select:focus-visible, #cv:focus-visib
   background: var(--paper);
   border: var(--line);
   border-radius: 12px;
-  padding: 10px 12px;
+  padding: 6px 12px;
 }
 .titlebox h1 {
   margin: 0;
   font-family: var(--font-pixel);
   font-weight: 700;
-  font-size: clamp(24px, 7.6vw, 32px);
+  font-size: clamp(18px, 5.4vw, 24px);
   line-height: 1;
   letter-spacing: 1px;
   white-space: nowrap;
 }
 .titlebox h1 span { color: var(--red); }
-.edition {
-  font-family: var(--font-pixel);
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 1.15;
-  text-align: center;
-  color: #fff;
-  background: var(--red);
-  border: 2px solid var(--ink);
-  border-radius: 6px;
-  padding: 4px 6px;
-}
 
 /* ---------- windows ---------- */
 .win { border: var(--line); border-radius: 12px; background: var(--paper); overflow: hidden; }
@@ -162,16 +150,16 @@ button:focus-visible, input:focus-visible, select:focus-visible, #cv:focus-visib
 .tool:active { transform: translateY(1px); }
 
 /* ---------- category buttons ---------- */
-.tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
 .tab {
-  height: 38px;
+  height: 30px;
   border: 2px solid var(--ink);
-  border-radius: 9px;
+  border-radius: 7px;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-pixel);
   font-weight: 700;
-  font-size: clamp(9px, 2.6vw, 11px);
+  font-size: clamp(9px, 2.4vw, 10px);
   letter-spacing: 0;
   padding: 0 4px;
   min-width: 0;
@@ -197,13 +185,14 @@ button:focus-visible, input:focus-visible, select:focus-visible, #cv:focus-visib
 }
 .chip[aria-pressed="true"] { background: #fff; border-color: #fff; color: var(--ink); }
 
-.slots { display: flex; align-items: center; gap: 6px; padding: 10px 10px 0; flex-wrap: wrap; }
-.slots span { font-family: var(--font-pixel); font-size: 10px; margin-right: 2px; }
+.tile.slots { gap: 4px; padding: 4px 6px; cursor: default; }
+.tile.slots:active { transform: none; }
+.slot-grid { display: grid; gap: 4px; }
 .slot {
-  width: 34px; height: 30px;
-  border: 2px solid var(--ink); border-radius: 6px;
+  width: 24px; height: 22px;
+  border: 2px solid var(--ink); border-radius: 5px;
   background: var(--paper); color: var(--ink);
-  font-family: var(--font-pixel); font-weight: 700; font-size: 12px; padding: 0;
+  font-family: var(--font-pixel); font-weight: 700; font-size: 10px; padding: 0;
 }
 .slot[aria-pressed="true"] { background: var(--red); color: #fff; }
 .tiles { display: flex; gap: 8px; overflow-x: auto; padding: 10px; scroll-snap-type: x proximity; }
