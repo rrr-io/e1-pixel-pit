@@ -4,6 +4,9 @@ import meowcedes from '../assets/logos/meowcedes.webp'
 import jaybull from '../assets/logos/jaybull.webp'
 import mcjakey from '../assets/logos/mcjakey.webp'
 import rikston from '../assets/logos/rikston.webp'
+import enwheel from '../assets/logos/enwheel.webp'
+import mamagp from '../assets/logos/mamagp.webp'
+import mamagpCar from '../assets/logos/mamagp_car.webp'
 import { SPRITES } from './sprites.js'
 
 // The E1 teams. `generic` has no file: its badge is drawn at runtime (assets.js).
@@ -14,6 +17,10 @@ export const TEAMS = [
   { key: 'jaybull', name: 'Jaybull', src: jaybull, color: '#f6c400', dot: '#1b2a5a' },
   { key: 'mcjakey', name: 'McJakey', src: mcjakey, color: '#ff8a00', dot: '#ffd09a' },
   { key: 'rikston', name: 'Rikston', src: rikston, color: '#0e6b4f', dot: '#3fd18f' },
+  { key: 'enwheel', name: 'Enwheel', src: enwheel, color: '#0b1f4a', dot: '#2aa4f4' },
+  // Official MAMA Grand Prix 2026 logos (@mamagranprix26).
+  { key: 'mamagp', name: 'MAMA GP E1', src: mamagp, color: '#141414', dot: '#e10600' },
+  { key: 'mamagp_car', name: 'MAMA GP car', src: mamagpCar, color: '#ffffff', dot: '#e10600' },
   { key: 'generic', name: 'E1 GP', src: null, color: '#111114', dot: '#e10600' }
 ]
 export const teamOf = key => TEAMS.find(t => t.key === key) || TEAMS[TEAMS.length - 1]

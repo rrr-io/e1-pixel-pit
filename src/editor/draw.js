@@ -201,7 +201,6 @@ export function makeGenericBadge() {
   c.beginPath(); c.arc(0, 0, S * 0.36, 0, Math.PI * 2); c.fillStyle = '#ffffff'; c.fill(); c.lineWidth = 10; c.strokeStyle = INK; c.stroke()
   pixText(c, 'E1', 0, -S * 0.06, S * 0.42, S * 0.24, RED, INK)
   pixText(c, 'GRAND PRIX', 0, S * 0.14, S * 0.5, S * 0.06, INK)
-  spr(c, 'star', -S * 0.2, -S * 0.2, S * 0.1); spr(c, 'heart', S * 0.21, -S * 0.2, S * 0.09)
   return cv
 }
 
@@ -210,6 +209,15 @@ function drawCover(c, it, w, h) {
   const t = teamOf(it.key), r = Math.min(w, h) * 0.07, p = new Path2D()
   if (p.roundRect) p.roundRect(-w / 2, -h / 2, w, h, r); else rectPath(p, -w / 2, -h / 2, w, h)
   c.save(); c.clip(p)
+  if (isPng(it.key)) {
+    // A photo cover fills the rounded square, cropped to the centre if it isn't square.
+    const im = assets.png(it.key)
+    if (im && im.width) {
+      const k = Math.max(w / im.width, h / im.height), dw = im.width * k, dh = im.height * k
+      c.drawImage(im, -dw / 2, -dh / 2, dw, dh)
+    } else { c.fillStyle = INK; c.fillRect(-w / 2, -h / 2, w, h) }
+    c.restore(); return
+  }
   const g = Math.max(w, h)
   const dots = (bg, dot, step, alpha) => {
     c.fillStyle = bg; c.fillRect(-w / 2, -h / 2, w, h); c.fillStyle = dot; c.globalAlpha = alpha
@@ -253,8 +261,9 @@ export function drawItem(c, it, src, now) {
   }
   if (it.flip) c.scale(-1, 1)
   const { w, h } = it
-  if (isPng(it.key)) {
+  if (isPng(it.key) && it.type !== 'cover') {
     // One of your PNGs (src/assets/stickers|frames|ids). Small images are pixel art: keep them sharp.
+    // Photo covers skip this: drawCover crops them into the rounded square.
     const im = assets.png(it.key)
     if (im) drawBitmap(c, im, w, h, !(im.naturalWidth && im.naturalWidth <= 160))
     c.restore()

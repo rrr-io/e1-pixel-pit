@@ -34,6 +34,7 @@ npm test        # vitest, a few seconds
 | Your stickers | `src/assets/stickers/` | Drop PNG/WebP files in. They show first under STICKERS › PIXEL and in the gacha. |
 | Your date frames | `src/assets/frames/` | Drop PNG/WebP files in, middle transparent. They show first in the DATE tab. |
 | Your ID covers | `src/assets/ids/` | Drop PNG/WebP files in. They show first in the ID tab. |
+| Photo covers | `src/assets/covers/` | Drop square PNG/WebP/JPG photos in. They fill the whole photo (rounded corners) and show after the team badges in the PHOTO tab. |
 | Built-in pixel stickers | `src/editor/sprites.js` | Drawn from text grids, one character per pixel. |
 | Built-in frames, ID covers, text-sticker styles, cover backdrops, E1 GP badge | `src/editor/draw.js` | Drawn in code. |
 | Text stickers ("radio messages") | `TEXTS` in `src/editor/catalog.js` | Edit the list. |

@@ -61,7 +61,10 @@ export default function Tray({ editor, tab, onGacha }) {
 
   let body
   if (tab === 'cover') {
-    body = TEAMS.map(t => <Tile key={t.key} editor={editor} type="cover" itemKey={t.key} label={t.name} bg={editor.coverBg} on={editor.coverKey === t.key && !!current} />)
+    body = [
+      ...TEAMS.map(t => <Tile key={t.key} editor={editor} type="cover" itemKey={t.key} label={t.name} bg={editor.coverBg} on={editor.coverKey === t.key && !!current} />),
+      ...CUSTOM.cover.map(e => <Tile key={e.key} editor={editor} type="cover" itemKey={e.key} label={e.name} on={editor.coverKey === e.key && !!current} />)
+    ]
   } else if (tab === 'frame' || tab === 'id') {
     // Your PNGs first, then the drawn-in-code set (title songs last in the ID tab).
     const showBuiltin = tab === 'frame' ? SHOW_BUILTIN.frames : SHOW_BUILTIN.ids
