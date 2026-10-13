@@ -2,20 +2,22 @@ import { useState } from 'react'
 import Thumb from './Thumb.jsx'
 import { SPRITES } from '../editor/sprites.js'
 import { FRAMES, IDS } from '../editor/draw.js'
-import { TEAMS, TEXTS, TEXT_STYLES, COVER_BACKDROPS } from '../editor/catalog.js'
+import { TEAMS, TEXTS, TEXT_STYLES } from '../editor/catalog.js'
 
-const INFO = {
-  cover: ['COVER THE OTHER PHOTO', 'Pick a team badge to sit over the non-ENHYPEN picture. Choose a backdrop before or after.'],
-  frame: ['FRAME THE DATE', 'One frame around your participation date. Use the white knobs to stretch it to fit.'],
-  id: ['HIDE THE CERT NUMBER', 'Cover the certificate No. before you post it.'],
-  sticker: ['STICKER GARAGE', 'Tap to drop a sticker, then drag it anywhere. Pinch or use the red knob to size and spin.']
-}
+const TITLES = { cover: 'COVERS.EXE', frame: 'DATES.EXE', id: 'IDS.EXE', sticker: 'STICKERS.EXE' }
+const BACKDROPS = [['team', 'TEAM'], ['checker', 'CHECKER'], ['race', 'RED'], ['night', 'NIGHT']]
+const FILTERS = [['pixel', 'PIXEL'], ['teams', 'TEAMS'], ['radio', 'RADIO'], ['abc', 'ABC']]
 
-function Tile({ editor, type, itemKey, label, on, bg }) {
+function Tile({ editor, type, itemKey, label, showLabel, on, bg, wide }) {
   return (
-    <button type="button" className={'tile' + (on ? ' on' : '')} onClick={() => editor.addItem(type, itemKey)} aria-label={'Add ' + label}>
-      <Thumb type={type} itemKey={itemKey} size={editor.sizeFor(type, itemKey)} bg={bg} />
-      <small>{label}</small>
+    <button
+      type="button"
+      className={'tile' + (on ? ' on' : '') + (wide ? ' wide' : '')}
+      onClick={() => editor.addItem(type, itemKey)}
+      aria-label={'Add ' + label}
+    >
+      <Thumb type={type} itemKey={itemKey} size={editor.sizeFor(type, itemKey)} bg={bg} wide={wide} />
+      {showLabel && <small>{label}</small>}
     </button>
   )
 }
@@ -41,54 +43,54 @@ function CustomText({ editor }) {
   )
 }
 
-export default function Tray({ editor, tab }) {
-  const [title, lead] = INFO[tab]
+export default function Tray({ editor, tab, onGacha }) {
+  const [filter, setFilter] = useState('pixel')
   const current = editor.current(tab)
 
+  let chips = null
+  if (tab === 'cover') {
+    chips = BACKDROPS.map(([k, n]) => (
+      <button key={k} type="button" className="chip" aria-pressed={editor.coverBg === k} onClick={() => editor.setCoverBg(k)}>{n}</button>
+    ))
+  } else if (tab === 'sticker') {
+    chips = FILTERS.map(([k, n]) => (
+      <button key={k} type="button" className="chip" aria-pressed={filter === k} onClick={() => setFilter(k)}>{n}</button>
+    ))
+  }
+
+  let body
+  if (tab === 'cover') {
+    body = TEAMS.map(t => <Tile key={t.key} editor={editor} type="cover" itemKey={t.key} label={t.name} bg={editor.coverBg} on={current?.key === t.key} />)
+  } else if (tab === 'frame' || tab === 'id') {
+    body = Object.entries(tab === 'frame' ? FRAMES : IDS).map(([k, f]) => (
+      <Tile key={k} editor={editor} type={tab} itemKey={k} label={f.name} showLabel on={current?.key === k} wide />
+    ))
+  } else if (filter === 'pixel') {
+    body = Object.entries(SPRITES).map(([k, s]) => <Tile key={k} editor={editor} type="sprite" itemKey={k} label={s.name} />)
+  } else if (filter === 'teams') {
+    body = TEAMS.map(t => <Tile key={t.key} editor={editor} type="logo" itemKey={t.key} label={t.name + ' badge'} />)
+  } else if (filter === 'radio') {
+    body = TEXTS.map(([t, s]) => <Tile key={t} editor={editor} type="text" itemKey={{ t, s }} label={t} wide />)
+  }
+
   return (
-    <section className="tray" role="tabpanel">
-      <h2>{title}</h2>
-      <p className="lead">{lead}</p>
-
-      {tab === 'cover' && (
-        <>
-          <div className="chips">
-            <span className="chips-label">BACKDROP</span>
-            {COVER_BACKDROPS.map(([k, n]) => (
-              <button key={k} type="button" className="chip" aria-pressed={editor.coverBg === k} onClick={() => editor.setCoverBg(k)}>{n}</button>
-            ))}
-          </div>
+    <section className="win" aria-label="Decorations">
+      <div className="win-bar black">
+        <span className="win-title">{TITLES[tab]}</span>
+        {chips && <div className="chips">{chips}</div>}
+      </div>
+      {tab === 'sticker' && filter === 'abc'
+        ? <CustomText editor={editor} />
+        : (
           <div className="tiles">
-            {TEAMS.map(t => <Tile key={t.key} editor={editor} type="cover" itemKey={t.key} label={t.name} bg={editor.coverBg} on={current?.key === t.key} />)}
+            {tab === 'sticker' && (
+              <button type="button" className="tile gacha" onClick={onGacha} aria-label="Gacha: add a random sticker">
+                <span className="capsule" aria-hidden="true" />GACHA
+              </button>
+            )}
+            {body}
           </div>
-        </>
-      )}
-
-      {(tab === 'frame' || tab === 'id') && (
-        <div className="tiles">
-          {Object.entries(tab === 'frame' ? FRAMES : IDS).map(([k, f]) => (
-            <Tile key={k} editor={editor} type={tab} itemKey={k} label={f.name} on={current?.key === k} />
-          ))}
-        </div>
-      )}
-
-      {tab === 'sticker' && (
-        <>
-          <h3>PIXEL PARTS</h3>
-          <div className="tiles">
-            {Object.entries(SPRITES).map(([k, s]) => <Tile key={k} editor={editor} type="sprite" itemKey={k} label={s.name} />)}
-          </div>
-          <h3>TEAM BADGES</h3>
-          <div className="tiles">
-            {TEAMS.map(t => <Tile key={t.key} editor={editor} type="logo" itemKey={t.key} label={t.name} />)}
-          </div>
-          <h3>RADIO MESSAGES</h3>
-          <div className="tiles">
-            {TEXTS.map(([t, s]) => <Tile key={t} editor={editor} type="text" itemKey={{ t, s }} label={t} />)}
-          </div>
-          <CustomText editor={editor} />
-        </>
-      )}
+        )}
     </section>
   )
 }

@@ -7,7 +7,6 @@ import { SPRITES } from './editor/sprites.js'
 import { TEAMS, TEXTS } from './editor/catalog.js'
 import Header from './components/Header.jsx'
 import Stage from './components/Stage.jsx'
-import SelTools from './components/SelTools.jsx'
 import Tabs from './components/Tabs.jsx'
 import Tray from './components/Tray.jsx'
 import Dock from './components/Dock.jsx'
@@ -81,13 +80,12 @@ export default function App() {
     <>
       <div className="app">
         <Header />
-        <Stage editor={editor} ready={ready} toast={toast} />
-        <SelTools editor={editor} onDuplicate={duplicate} />
+        <Stage editor={editor} ready={ready} toast={toast} onDuplicate={duplicate} />
         <Tabs tab={tab} onChange={setTab} />
-        {ready && <Tray editor={editor} tab={tab} />}
+        {ready && <Tray editor={editor} tab={tab} onGacha={gacha} />}
       </div>
-      <Dock onFile={loadFile} onGacha={gacha} onSave={save} />
-      {result && <ResultModal blob={result} isDemo={editor.isDemo} onClose={() => setResult(null)} />}
+      <Dock onFile={loadFile} onSave={save} />
+      {result && <ResultModal blob={result} isDemo={editor.isDemo} size={{ w: editor.W, h: editor.H }} onClose={() => setResult(null)} />}
     </>
   )
 }

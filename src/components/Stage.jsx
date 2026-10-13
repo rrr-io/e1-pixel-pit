@@ -1,12 +1,19 @@
 import { useEffect, useRef } from 'react'
+import StatusBar from './StatusBar.jsx'
 
-export default function Stage({ editor, ready, toast }) {
+// The CERTIFICATE.PNG window: title bar with the start lights, the canvas, and a status bar
+// that turns into the selection tools when a decoration is selected.
+export default function Stage({ editor, ready, toast, onDuplicate }) {
   const screenRef = useRef(null)
   const canvasRef = useRef(null)
 
   useEffect(() => {
     editor.attach(canvasRef.current)
-    const fit = () => editor.layout(screenRef.current.clientWidth, Math.min(window.innerHeight * 0.62, 760))
+    const fit = () => {
+      const el = screenRef.current
+      const pad = 24 // .screen padding, both sides
+      editor.layout(el.clientWidth - pad, Math.min(window.innerHeight * 0.47, 560))
+    }
     const ro = new ResizeObserver(fit)
     ro.observe(screenRef.current)
     window.addEventListener('resize', fit)
@@ -14,23 +21,17 @@ export default function Stage({ editor, ready, toast }) {
     return () => { ro.disconnect(); window.removeEventListener('resize', fit) }
   }, [editor])
 
-  const tag = toast || (editor.isDemo ? 'SAMPLE · INSERT COIN TO LOAD YOURS' : '')
-
   return (
-    <section aria-label="Editor">
-      <div className="cabinet">
-        <div className="screen" ref={screenRef}>
-          <canvas
-            ref={canvasRef}
-            id="cv"
-            tabIndex={0}
-            aria-label="Certificate preview. Tap a decoration to select it."
-          />
-          {!ready && <div className="loading">WARMING UP TYRES…</div>}
-          {tag && ready && <div className="tag" role="status">{tag.toUpperCase()}</div>}
-        </div>
+    <section className="win" aria-label="Certificate editor">
+      <div className="win-bar red">
+        <span className="win-title">CERTIFICATE.PNG</span>
+        <div className="lights" role="img" aria-label="Start lights"><i /><i /><i /><i /><i /></div>
       </div>
-      <p className="hint">Drag to move · red knob = size + spin · white knobs = stretch · pinch works too</p>
+      <div className="screen" ref={screenRef}>
+        <canvas ref={canvasRef} id="cv" tabIndex={0} aria-label="Certificate preview. Tap a decoration to select it." />
+        {!ready && <div className="loading">WARMING UP TYRES…</div>}
+      </div>
+      <StatusBar editor={editor} toast={toast} onDuplicate={onDuplicate} />
     </section>
   )
 }
