@@ -132,7 +132,6 @@ export const IDS = {
     c.fillStyle = RED; c.fill(p); c.lineWidth = h * 0.06; c.strokeStyle = INK; c.stroke(p)
     const sx = w / 2 - h * 1.05
     c.save(); c.setLineDash([h * 0.09, h * 0.08]); c.lineWidth = h * 0.05; c.strokeStyle = '#ffffff'; c.beginPath(); c.moveTo(sx, -h * 0.4); c.lineTo(sx, h * 0.4); c.stroke(); c.restore()
-    spr(c, 'star', (sx + w / 2) / 2 - h * 0.03, 0, h * 0.5)
     pixText(c, 'ENGENE PASS', (-w / 2 + sx) / 2, 0, (sx + w / 2) - r * 2 - h * 0.3, h * 0.34, '#ffffff', INK)
   } },
   plate: { name: 'E1 plate', draw(c, w, h) {
@@ -258,6 +257,12 @@ export function drawItem(c, it, src, now) {
   if (now && it.pop) {
     const t = (now - it.pop) / 380
     if (t < 1) { const k = 1 + 0.28 * Math.sin(Math.PI * t) * (1 - t * 0.4); c.scale(k, k) } else it.pop = 0
+  }
+  if (now && it.wig) {
+    // "You can move me": a short shake with a little hop, fading out. Waits while `now` is before the start.
+    const t = (now - it.wig) / 900
+    if (t >= 1) it.wig = 0
+    else if (t > 0) { const f = 1 - t; c.rotate(Math.sin(t * Math.PI * 6) * 0.16 * f); c.scale(1 + 0.1 * Math.sin(Math.PI * t), 1 + 0.1 * Math.sin(Math.PI * t)) }
   }
   if (it.flip) c.scale(-1, 1)
   const { w, h } = it

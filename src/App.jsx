@@ -35,11 +35,16 @@ export default function App() {
       editor.setBase(demo, demo.width, demo.height, true)
       editor.applyLayout(detectLayout(readPixels(demo)))
       const { W, H } = editor
-      editor.addItem('cover', 'hoonrari')
+      // A different cover at every visit: any team badge or photo cover.
+      const coverPool = [...TEAMS.map(t => t.key), ...CUSTOM.cover.map(e => e.key)]
+      editor.addItem('cover', coverPool[Math.floor(Math.random() * coverPool.length)])
       editor.addItem('frame', 'kerb')
-      editor.addItem('id', 'hazard')
-      editor.addItem('sprite', 'trophy', { x: W * 0.2, y: H * 0.6, rot: -0.12 })
-      editor.addItem('sprite', 'heart', { x: W * 0.9, y: H * 0.2 })
+      editor.addItem('id', 'plate') // ENGENE-26
+      // Starter stickers: VOTE ENHYPEN above the first photo, EN on its bottom corner, EMGP26 and the heart in the empty top corners.
+      const en = editor.addItem('sprite', 'png:0_en', { rot: -0.1, anchor: 'photo1' })
+      Object.assign(en, editor.onFirstPhoto(en))
+      editor.addItem('sprite', 'png:z_bremgp', { x: W * 0.2, y: H * 0.075, rot: -0.08 })
+      editor.addItem('sprite', 'heart', { x: W * 0.86, y: H * 0.085, rot: 0.12 })
       editor.addItem('text', { t: 'VOTE ENHYPEN', s: 'red' }, { x: W * 0.3, y: H * 0.29, rot: -0.08 })
       editor.items.forEach(i => { i.pop = 0 })
       editor.select(null)
@@ -67,6 +72,7 @@ export default function App() {
         const n = editor.slots.length
         flash(n === 1 ? 'Found 1 photo' : `Found ${n} photos · covered ${editor.covered.size}`)
       } else flash('Could not find the photos: place the cover by hand')
+      editor.wiggle()
     }
     im.onerror = () => { URL.revokeObjectURL(url); flash('That file is not an image') }
     im.src = url

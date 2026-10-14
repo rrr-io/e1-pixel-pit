@@ -58,6 +58,7 @@ export class Editor {
     this.items = this.items.filter(i => i.type !== 'cover')
     this.covered = new Set(wantCovers ? this.slots.map((_, i) => i).filter(i => i > 0) : [])
     for (const i of this.covered) this.items.unshift(this.coverAt(i))
+    for (const it of this.items) if (it.anchor === 'photo1') Object.assign(it, this.onFirstPhoto(it))
     const frame = this.current('frame'); if (frame && this.dateBox) Object.assign(frame, this.fitFrame())
     const id = this.current('id'); if (id && this.idBox) Object.assign(id, this.fitId())
     if (this.sel && !this.items.includes(this.sel)) this.sel = null
@@ -70,6 +71,23 @@ export class Editor {
     return { id: this.uid++, type: 'cover', key: this.coverKey, bg: this.coverBg, slot: i,
       x: s.x, y: s.y, w: side, h: side, rot: 0, flip: false, pop: 0 }
   }
+  // A sticker pinned to the bottom-left corner of the first photo (the starter EN sticker), sized to the photo.
+  // It follows the photo when a new certificate is loaded, until the fan moves it.
+  onFirstPhoto(it) {
+    const s = this.slots[0]
+    if (!s) return {}
+    const k = Math.min(Math.max(s.w * 0.8, this.W * 0.16), this.W * 0.3) / it.w
+    return { w: it.w * k, h: it.h * k, x: s.x - s.w * 0.36, y: s.y + s.h * 0.44 }
+  }
+
+  // Briefly wiggle the stickers one after another, to show they can be moved.
+  wiggle() {
+    const now = typeof performance !== 'undefined' ? performance.now() : 0
+    let n = 0
+    for (const it of this.items) if (['sprite', 'logo', 'text'].includes(it.type)) it.wig = now + 250 + n++ * 160
+    this.dirty()
+  }
+
   fitFrame() {
     const b = this.dateBox, W = this.W
     return { x: b.x, y: b.y, w: b.w + W * 0.06, h: Math.max(b.h * 2.2, W * 0.06), rot: 0 }
@@ -199,7 +217,7 @@ export class Editor {
     ctx.setTransform(s, 0, 0, s, 0, 0)
     if (this.base) ctx.drawImage(this.base, 0, 0, this.W, this.H)
     let animating = false
-    for (const it of this.items) { drawItem(ctx, it, this.base, now); if (it.pop) animating = true }
+    for (const it of this.items) { drawItem(ctx, it, this.base, now); if (it.pop || it.wig) animating = true }
     if (this.sel) this.drawSelection(this.sel)
     if (animating) this.dirty()
   }
@@ -256,6 +274,7 @@ export class Editor {
     const it = hitItem(p, this.items, 6 * px)
     if (it) {
       if (sel !== it) this.select(it)
+      it.anchor = null
       this.mode = 'move'; this.st = { ox: p.x - it.x, oy: p.y - it.y }
       this.canvas.classList.add('dragging')
     } else {
@@ -308,7 +327,7 @@ export class Editor {
     const out = document.createElement('canvas'); out.width = this.W; out.height = this.H
     const c = out.getContext('2d')
     if (this.base) c.drawImage(this.base, 0, 0, this.W, this.H)
-    for (const it of this.items) drawItem(c, { ...it, pop: 0 }, this.base, 0)
+    for (const it of this.items) drawItem(c, { ...it, pop: 0, wig: 0 }, this.base, 0)
     return new Promise(res => out.toBlob(res, 'image/png'))
   }
 }
