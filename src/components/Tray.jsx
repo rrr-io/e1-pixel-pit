@@ -59,11 +59,13 @@ export default function Tray({ editor, tab, onGacha }) {
     ))
   }
 
+  // The badge to light up: the selected cover's own, else the one last picked for all.
+  const coverOn = editor.sel?.type === 'cover' ? editor.sel.key : (current ? editor.coverKey : null)
   let body
   if (tab === 'cover') {
     body = [
-      ...TEAMS.map(t => <Tile key={t.key} editor={editor} type="cover" itemKey={t.key} label={t.name} bg={editor.coverBg} on={editor.coverKey === t.key && !!current} />),
-      ...CUSTOM.cover.map(e => <Tile key={e.key} editor={editor} type="cover" itemKey={e.key} label={e.name} on={editor.coverKey === e.key && !!current} />)
+      ...TEAMS.map(t => <Tile key={t.key} editor={editor} type="cover" itemKey={t.key} label={t.name} bg={editor.coverBg} on={coverOn === t.key} />),
+      ...CUSTOM.cover.map(e => <Tile key={e.key} editor={editor} type="cover" itemKey={e.key} label={e.name} on={coverOn === e.key} />)
     ]
   } else if (tab === 'frame' || tab === 'id') {
     // Your PNGs first, then the drawn-in-code set (title songs last in the ID tab).

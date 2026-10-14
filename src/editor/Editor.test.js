@@ -88,6 +88,19 @@ describe('Editor on a detected certificate', () => {
     expect(ed.items.find(i => i.slot === 0).key).toBe('alpinoo')
   })
 
+  it('gives one photo its own cover when that cover is selected, and keeps it on a new certificate', () => {
+    const ed = new Editor()
+    ed.applyLayout(found(4))
+    ed.addItem('cover', 'alpinoo')
+    const second = ed.items.find(i => i.slot === 2)
+    ed.select(second)
+    ed.addItem('cover', 'jaybull')
+    const keys = () => [1, 2, 3].map(s => ed.items.find(i => i.slot === s).key)
+    expect(keys()).toEqual(['alpinoo', 'jaybull', 'alpinoo'])
+    ed.applyLayout(found(4))
+    expect(keys()).toEqual(['alpinoo', 'jaybull', 'alpinoo'])
+  })
+
   it('puts the date frame and the ID cover on what was found', () => {
     const ed = new Editor()
     ed.applyLayout(found(2))

@@ -4,7 +4,7 @@ const FILENAME = 'e1-mama-certificate.png'
 
 export default function ResultModal({ blob, isDemo, size, onClose }) {
   const url = useMemo(() => URL.createObjectURL(blob), [blob])
-  const [status, setStatus] = useState(isDemo ? 'This is the sample. Open your screenshot to decorate your real certificate.' : '')
+  const [status, setStatus] = useState(isDemo ? 'This is the sample. Open your certificate to decorate your voting proof.' : '')
   useEffect(() => () => URL.revokeObjectURL(url), [url])
   useEffect(() => {
     const onKey = e => { if (e.key === 'Escape') onClose() }
@@ -53,7 +53,7 @@ export default function ResultModal({ blob, isDemo, size, onClose }) {
           <div className="finish-body">
             <h2 id="mTitle">CHECKERED FLAG!<br /><span>CERTIFICATE READY</span></h2>
             <img src={url} alt="Your decorated certificate" />
-            <p>{size ? `${size.w}×${size.h} px, same as your screenshot · ` : ''}You can also long-press the image to save it.</p>
+            <p>{size ? `${size.w}×${size.h} px, same as your certificate · ` : ''}You can also long-press the image to save it.</p>
             <p className="status-line" role="status">{status}</p>
           </div>
         </section>

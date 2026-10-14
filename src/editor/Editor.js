@@ -21,6 +21,8 @@ export class Editor {
     this.dateBox = null         // where the participation date is, if found
     this.idBox = null           // where the certificate number is, if found
     this.uid = 1
+    this.onHint = null          // set by the app to show a short tip
+    this.hinted = false
     this.canvas = null
     this.cssW = 300
     this.raf = 0
@@ -55,9 +57,10 @@ export class Editor {
     this.idBox = px(found.id)
     // Keep covering photos if there were covers (or nothing at all yet); respect a fan who removed them.
     const wantCovers = this.items.some(i => i.type === 'cover') || !this.items.length
+    const keyOf = new Map(this.items.filter(i => i.type === 'cover' && i.slot != null).map(i => [i.slot, i.key]))
     this.items = this.items.filter(i => i.type !== 'cover')
     this.covered = new Set(wantCovers ? this.slots.map((_, i) => i).filter(i => i > 0) : [])
-    for (const i of this.covered) this.items.unshift(this.coverAt(i))
+    for (const i of this.covered) { const c = this.coverAt(i); if (keyOf.has(i)) c.key = keyOf.get(i); this.items.unshift(c) }
     for (const it of this.items) if (it.anchor === 'photo1') Object.assign(it, this.onFirstPhoto(it))
     const frame = this.current('frame'); if (frame && this.dateBox) Object.assign(frame, this.fitFrame())
     const id = this.current('id'); if (id && this.idBox) Object.assign(id, this.fitId())
@@ -123,11 +126,20 @@ export class Editor {
   addItem(type, key, opts = {}) {
     const now = typeof performance !== 'undefined' ? performance.now() : 0
     if (type === 'cover') {
-      // One team for every covered photo: picking a badge restyles them all.
+      // A cover selected on the certificate: only that photo changes, so each photo can have its own.
+      // Otherwise the pick goes on every covered photo.
       this.coverKey = key
       const covers = this.items.filter(i => i.type === 'cover')
+      if (this.sel && this.sel.type === 'cover' && covers.length > 1) {
+        this.sel.key = key; this.sel.bg = this.coverBg; this.sel.pop = now
+        this.dirty(); this.emit(); return this.sel
+      }
       if (covers.length) {
         for (const c of covers) { c.key = key; c.bg = this.coverBg; c.pop = now }
+        if (covers.length > 1) {
+          if (!this.hinted && this.onHint) { this.hinted = true; this.onHint('Tap one cover on the certificate to change only that one') }
+          this.select(null); return covers[0]
+        }
         this.select(covers[0]); return covers[0]
       }
       if (this.slots.length > 1) {

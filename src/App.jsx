@@ -26,6 +26,7 @@ export default function App() {
   const toastTimer = useRef(0)
 
   useEffect(() => editor.subscribe(rerender), [editor])
+  useEffect(() => { editor.onHint = msg => flash(msg) })
 
   useEffect(() => {
     let alive = true
