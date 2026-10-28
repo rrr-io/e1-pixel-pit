@@ -6,6 +6,14 @@ import { toLocal, handles, hitHandle, hitItem, rescaleItems, snapAngle } from '.
 import { isPng } from './custom.js'
 import { assets } from './assets.js'
 
+// Which photos get a cover when a certificate is loaded (indices, left to right).
+// Round 2 certificates have three photos and only the middle one is another artist.
+// Any other layout: every photo but the first (the group the fan voted for comes first).
+export function defaultCovered(n) {
+  if (n === 3) return [1]
+  return Array.from({ length: n }, (_, i) => i).filter(i => i > 0)
+}
+
 export class Editor {
   constructor() {
     this.items = []
@@ -46,8 +54,8 @@ export class Editor {
   }
 
   /* ---- certificate layout (see detect.js) ---- */
-  // `found` is detectLayout()'s result in fractions, or null. Covers go on every photo except the first
-  // (the group the fan voted for comes first), the date frame and ID cover move onto what was found.
+  // `found` is detectLayout()'s result in fractions, or null. Covers go where defaultCovered() says,
+  // the date frame and ID cover move onto what was found.
   applyLayout(found) {
     if (!found) { this.slots = []; this.dateBox = this.idBox = null; this.covered.clear(); this.emit(); return false }
     const { W, H } = this
@@ -59,7 +67,7 @@ export class Editor {
     const wantCovers = this.items.some(i => i.type === 'cover') || !this.items.length
     const keyOf = new Map(this.items.filter(i => i.type === 'cover' && i.slot != null).map(i => [i.slot, i.key]))
     this.items = this.items.filter(i => i.type !== 'cover')
-    this.covered = new Set(wantCovers ? this.slots.map((_, i) => i).filter(i => i > 0) : [])
+    this.covered = new Set(wantCovers ? defaultCovered(this.slots.length) : [])
     for (const i of this.covered) { const c = this.coverAt(i); if (keyOf.has(i)) c.key = keyOf.get(i); this.items.unshift(c) }
     for (const it of this.items) if (it.anchor === 'photo1') Object.assign(it, this.onFirstPhoto(it))
     const frame = this.current('frame'); if (frame && this.dateBox) Object.assign(frame, this.fitFrame())
@@ -120,7 +128,11 @@ export class Editor {
     let aspect
     if (type === 'text') { const b = textBitmap(key.t, key.s); aspect = b.width / b.height }
     else if (isPng(key)) { const im = assets.png(key); aspect = im && im.naturalHeight ? im.naturalWidth / im.naturalHeight : 1 }
-    return defaultSize(type, key, this.W, aspect)
+    const size = defaultSize(type, key, this.W, aspect)
+    // Small pixel-art PNGs (160 px or less, like the flowers) start at half size: they are little decorations.
+    const im = isPng(key) && type === 'sprite' ? assets.png(key) : null
+    if (im && im.naturalWidth && im.naturalWidth <= 160) { size.w *= 0.5; size.h *= 0.5 }
+    return size
   }
 
   addItem(type, key, opts = {}) {
@@ -143,7 +155,7 @@ export class Editor {
         this.select(covers[0]); return covers[0]
       }
       if (this.slots.length > 1) {
-        if (!this.covered.size) this.covered = new Set(this.slots.map((_, i) => i).filter(i => i > 0))
+        if (!this.covered.size) this.covered = new Set(defaultCovered(this.slots.length))
         const made = [...this.covered].map(i => { const it = this.coverAt(i); it.pop = now; return it })
         this.items.unshift(...made)
         this.select(made[0]); return made[0]

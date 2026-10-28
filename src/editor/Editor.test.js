@@ -76,9 +76,15 @@ describe('Editor on a detected certificate', () => {
     expect(new Set(covers.map(c => c.y)).size).toBe(1)
   })
 
-  it('restyles all covers when a team is picked, and toggles single photos', () => {
+  it('covers only the middle photo on a three-photo certificate (round 2)', () => {
     const ed = new Editor()
     ed.applyLayout(found(3))
+    expect(ed.items.filter(i => i.type === 'cover').map(c => c.slot)).toEqual([1])
+  })
+
+  it('restyles all covers when a team is picked, and toggles single photos', () => {
+    const ed = new Editor()
+    ed.applyLayout(found(4))
     ed.addItem('cover', 'alpinoo')
     expect(ed.items.filter(i => i.type === 'cover').every(c => c.key === 'alpinoo')).toBe(true)
     ed.toggleSlot(2)

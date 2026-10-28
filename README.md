@@ -53,7 +53,7 @@ When a screenshot is loaded, `detect.js` reads it (scaled to 360 px wide) and fi
 - **the participation date**: the first text line below the photos with text on the right and nothing in the middle.
 - **the certificate number**: the lowest text line that starts on the left.
 
-Every photo except the first gets a cover in the chosen team badge (the PHOTO tab's numbered buttons turn single covers on and off), and the date frame and ID cover move onto the date and the number. If nothing is found, decorations keep their relative position and `PRESET` in `catalog.js` is used for new ones.
+On a three-photo certificate (round 2) only the middle photo gets a cover; on any other layout every photo except the first does (`defaultCovered` in `Editor.js`). Covers use the chosen team badge (the PHOTO tab's numbered buttons turn single covers on and off), and the date frame and ID cover move onto the date and the number. If nothing is found, decorations keep their relative position and `PRESET` in `catalog.js` is used for new ones.
 
 ## Deploy
 

@@ -9,11 +9,15 @@ export function makeDemoCertificate() {
   x.textAlign = 'center'
   x.fillStyle = '#1d1d24'; x.font = 'bold 64px system-ui,sans-serif'; x.fillText('VOTING CERTIFICATE', 465, 270)
   x.fillStyle = '#ff4f8b'; x.font = '40px system-ui,sans-serif'; x.fillText('✔ Sample Certificate', 465, 345)
-  x.fillStyle = '#111'; rr(111, 395, 336, 336, 22); x.fill()
-  x.fillStyle = '#2b2b33'; rr(111, 430, 336, 266, 0); x.fill()
-  x.fillStyle = '#c7c3d6'; rr(483, 395, 336, 336, 22); x.fill()
-  x.fillStyle = '#8a8699'; x.font = '30px system-ui,sans-serif'; x.fillText('GROUP PHOTO', 279, 575)
-  x.fillStyle = '#fff'; x.fillText('OTHER PHOTO', 651, 575)
+  // Round 2 layout: three photos, the other artist in the middle.
+  const side = 228, gap = 22, x0 = 465 - side * 1.5 - gap, top = 430
+  const cols = [['#111', '#2b2b33', 'GROUP', '#8a8699'], ['#c7c3d6', null, 'OTHER', '#fff'], ['#2b2b33', '#3a3a44', 'GROUP', '#8a8699']]
+  cols.forEach(([bg, band, label, fg], i) => {
+    const px = x0 + i * (side + gap)
+    x.fillStyle = bg; rr(px, top, side, side, 18); x.fill()
+    if (band) { x.fillStyle = band; rr(px, top + 26, side, side - 52, 0); x.fill() }
+    x.fillStyle = fg; x.font = '26px system-ui,sans-serif'; x.fillText(label, px + side / 2, top + side / 2 + 9)
+  })
   x.fillStyle = '#777'; x.font = '40px system-ui,sans-serif'; x.fillText('2026 MAMA AWARDS', 465, 800)
   x.fillStyle = '#111'; x.font = 'bold 50px system-ui,sans-serif'; x.fillText("FANS' CHOICE · 1st VOTE", 465, 880)
   x.fillStyle = '#d6d4e4'; x.fillRect(66, 1022, 798, 3)
